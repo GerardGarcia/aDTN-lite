@@ -1,0 +1,175 @@
+@startuml
+
+''' Simple observer patter '''
+
+'class Observable {
+'    - std::map<Event, std::vector<std::function<void()>>>
+'    + registerObserver();
+'    + notify()
+'}
+
+''' End Simple observer pattern '''
+
+
+
+'''' ApplicationManager ''''
+
+class ApplicationManager <<Observable>> {
+
+}
+
+ApplicationManager "1" *-- "1" ApplicationDatabase
+
+class ApplicationDatabase {
+
+}
+
+ApplicationDatabase "1" *-- "0..N" Application
+
+'''' End applicationManager ''''
+
+
+
+'''' Executor ''''
+
+class Executor {
+    - map<string, Code> knownFwdCodes
+    - map<string, Code> knownDeliveryCodes
+    - map<string, Code> knownProfileCodes
+    + std::string executeForwarding(string code)
+    + bool executeDelivery(string code)
+    + bool executeProfile(string code)
+}
+
+class Code {
+    + Code(std::string code)
+    + execute()
+    + const std::string &getCode() const
+    - compile()
+    - fptr getFunction() const
+    - code : string
+    # static constexpr auto codeHeader
+    # static constexpr auto codeFooter
+    # static constexpr auto functionName
+    # std::shared_ptr<TCCWrapper> tcc;
+}
+
+class ForwardingCode {
+    + string getDestinations()
+    - void *destSym;
+    - static constexpr auto codeHeader
+    - static constexpr auto codeFooter
+    - static constexpr auto functionName
+}
+
+class DeliveryCode {
+    + boolean doDeliver()
+}
+
+class ProfileCode {
+    + void setProfile(std::string)
+    + int getProfileValue()
+}
+
+Executor "1" *-- "0..N" Code
+
+Code <|-- ForwardingCode
+Code <|-- DeliveryCode
+Code <|-- ProfileCode
+
+''''' End executor ''''
+
+
+''''' NeighborDiscoverer  ''''
+class Neighbor {
+    + Neighbor()
+    - std::string m_id
+    - std::string m_ip
+    - std::chrono::time_point<> m_lastSeen;
+}
+
+class NbsTable {
+    - std::mab<std::string, Neighbor> nbs;
+    + bool addNb(Neigbhor nb)
+    + bool delNb(std::string id)
+    + std::map<std::string, Neighbor> getNbs()
+}
+
+NbsTable "1" *-- "0..N" Neighbor
+
+class NeighborDiscoverer <<Observable>> {
+    + NeighborDiscoverer(Config config)
+    - NbsTable nbs
+    - beaconSender()
+    - beaconReceiver()
+    - nbsCleaner()
+}
+
+NeighborDiscoverer "1" *--> "1" NbsTable
+' NeighborDiscoverer ..> Neighbor
+
+class Beacon {
+    + Beacon()
+    - std::string id
+    - std::string ip
+    + void parse(std::vector<uint8_t> &raw)
+    + std::vector<uint8_t> raw()
+}
+
+' NeighborDiscoverer ..> Executor
+NeighborDiscoverer ..> Beacon
+
+''''' End NeighborDiscoverer ''''
+
+
+
+'''' BundleManager ''''
+
+class BundleDatabase {
+}
+
+BundleDatabase "1" *-- "0..N" Bundle
+
+class BundleIO <<Observable>> {
+    + sendBundle(fd)
+    - bundleReceiver(
+}
+
+' BundleIO ..> Bundle
+' BundleIO o-- BundleDatabase
+
+class Deliverer {
+    + deliverBundles()
+    + deliverBundlesTo()
+}
+
+' Deliverer ..> Application
+Deliverer "1" o-- "1" ApplicationDatabase
+Deliverer "1" *--> "1" Executor
+
+class Forwarder {
+    + forwardBundles()
+    + forwardBundlesTo()
+}
+
+' Forwarder ..> Neighbor
+Forwarder "1" o-- "1" NbsTable
+Forwarder "1" *--> "1" Executor
+
+class BundleManager {
+ + BundleManager()
+}
+
+BundleManager ..> NeighborDiscoverer : observes
+BundleManager ..> ApplicationManager : observes
+BundleManager ..> BundleIO : observes
+
+BundleManager "1" *-- "1" BundleIO
+BundleManager "1" *-- "1" BundleDatabase
+
+BundleManager "1" *-- "1" Deliverer
+BundleManager "1" *-- "1" Forwarder
+
+'''' End BundleManager ''''
+
+@enduml
