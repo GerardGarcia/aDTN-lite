@@ -38,8 +38,13 @@ include_directories(${CMAKE_SOURCE_DIR}/Executor
     ${CMAKE_SOURCE_DIR}/Executor/Backend} ${CMAKE_SOURCE_DIR}/vendor/ubpf)
 set(EXECUTOR Executor/Backend/Backend.h Executor/Backend/ClangBackend.h Executor/Backend/ClangBackend.cpp)
 
+# AppManager
+include_directories(${CMAKE_SOURCE_DIR}/AppManager)
+set(APPMANAGER AppManager/Application.h AppManager/Application.cpp
+    AppManager/AppManager.h AppManager/AppManager.cpp)
+
 ### aDTN-lite
-set(SOURCE_FILES ${MISC} ${EXECUTOR})
+set(SOURCE_FILES ${MISC} ${EXECUTOR} ${APPMANAGER})
 add_executable(aDTN-lite main.cpp ${SOURCE_FILES})
 target_link_libraries(aDTN-lite ${EXECUTOR_LIBRARIES})
 
