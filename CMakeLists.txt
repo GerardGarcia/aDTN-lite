@@ -3,8 +3,8 @@ project(aDTN-lite CXX)
 
 execute_process(COMMAND /usr/bin/llvm-config --cxxflags OUTPUT_VARIABLE LLVM_CONFIG OUTPUT_STRIP_TRAILING_WHITESPACE)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${LLVM_CONFIG}")
-#set(CMAKE_CXX_COMPILER "/usr/bin/clang++")
-#set(CMAKE_C_COMPILER "/usr/bin/clang")
+set(CMAKE_CXX_COMPILER "/usr/bin/clang++")
+set(CMAKE_C_COMPILER "/usr/bin/clang")
 
 ### Options
 option(build_tests "Build tests" ON)
@@ -58,7 +58,7 @@ if (build_tests)
 
     # TODO: Downlaod google test only if build_tests is enabled
     # Compile google-test
-    add_subdirectory(vendor/googletest)
+    add_subdirectory(vendor/googletest/googletest)
     include_directories(${gtest_SOURCE_DIR}/include)
 
     add_executable(ExecutorTest Executor/tests/ExecutorTest.cpp
