@@ -9,10 +9,13 @@
 	url = https://github.com/google/googletest.git
 [submodule "vendor/aDTNPlus"]
 	path = vendor/aDTNPlus
-	url = git@github.com:SeNDA-UAB/aDTNPlus.git
+	url = git@github.com:GerardGarcia/aDTNPlus.git
 [submodule "vendor/xxHash"]
 	path = vendor/xxHash
 	url = https://github.com/Cyan4973/xxHash.git
 [submodule "inih"]
 	path = vendor/inih
 	url = https://github.com/benhoyt/inih.git
+[submodule "vendor/bcc"]
+	path = vendor/bcc
+	url = https://github.com/iovisor/bcc.git

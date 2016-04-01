@@ -1,13 +1,18 @@
+#pragma once
+
 #include <string>
 #include <vector>
 #include <cstdint>
 
-using namespace std;
+using std::string;
 
+template<typename ExecObjT>
 class CompilerBackend {
-public:
-    virtual vector<uint8_t> compile(string _code) = 0; 
-
+    public:
+        CompilerBackend() {};
+        virtual int compile(string _code, ExecObjT& _execObject) = 0; 
+            
+        // Allows us to know which type of execution objects 
+        // generates this compiler backend
+        using exec_obj_type = ExecObjT; 
 };
-
-

@@ -2,7 +2,11 @@
 
 #include "Application.h"
 
-unordered_map<string, string> Application::getProps() {
+const string& Application::getName() const {
+    return name;
+}
+
+unordered_map<string, string> Application::getProps() const {
     return props;
 }
 
@@ -13,7 +17,7 @@ void Application::setProp(const string key, const string value) {
    props.insert({key, value}); 
 }
 
-string Application::getProp(const string key) {
+string Application::getProp(const string key) const {
     if (!key.length())
         return "";
     

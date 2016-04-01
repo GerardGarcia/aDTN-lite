@@ -10,72 +10,54 @@
 
 ''' End Simple observer pattern '''
 
+'''' AppManager ''''
 
-
-'''' ApplicationManager ''''
-
-class ApplicationManager <<Observable>> {
-
+class AppManager <<Observable>> {
+    + AppManager()
+    + ~AppManager()
+    + vector<Application> getApps()
+    + void addApp(Application &app)
+    + void delApp()
+    - vector<Application> apps
 }
 
-ApplicationManager "1" *-- "1" ApplicationDatabase
-
-class ApplicationDatabase {
-
+class Application {
+    + Application(string _name)
+    + Application(Application &other)
+    + ~Application()
+    + const string& getName() const
+    + unordered_map<string, string> getProps() const
+    + void setProp(const string key, const string value)
+    + string getProp(const string key) const
+    - unordered_map<string, string> props
+    - const string name
 }
 
-ApplicationDatabase "1" *-- "0..N" Application
+AppManager "1" *-- "0..N" Application
 
 '''' End applicationManager ''''
-
 
 
 '''' Executor ''''
 
 class Executor {
-    - map<string, Code> knownFwdCodes
-    - map<string, Code> knownDeliveryCodes
-    - map<string, Code> knownProfileCodes
-    + std::string executeForwarding(string code)
-    + bool executeDelivery(string code)
-    + bool executeProfile(string code)
+    + Executor()
 }
 
-class Code {
+class Code<TCompilerBackend, TExecBackend> {
     + Code(std::string code)
-    + execute()
-    + const std::string &getCode() const
-    - compile()
-    - fptr getFunction() const
-    - code : string
-    # static constexpr auto codeHeader
-    # static constexpr auto codeFooter
-    # static constexpr auto functionName
-    # std::shared_ptr<TCCWrapper> tcc;
-}
-
-class ForwardingCode {
-    + string getDestinations()
-    - void *destSym;
-    - static constexpr auto codeHeader
-    - static constexpr auto codeFooter
-    - static constexpr auto functionName
-}
-
-class DeliveryCode {
-    + boolean doDeliver()
-}
-
-class ProfileCode {
-    + void setProfile(std::string)
-    + int getProfileValue()
+    + typename TExecBackend::return_type execute()
+    + const string &getCode() const
+    + void setCompilerBackend(shared_ptr<TCompilerBackend> _compilerBackend) const
+    + shared_ptr<TCompilerBackend> getCompilerBackend()
+    + void setExecBackend(shared_ptr<TCompilerBackend> _execBackend) const
+    + shared_ptr<TCompilerBackend> getExecBackend()
+    - shared_ptr<TCompilerBackend> m_compilerBackend;
+    - shared_ptr<TExecBackend> m_execBackend;
+    - string m_code;
 }
 
 Executor "1" *-- "0..N" Code
-
-Code <|-- ForwardingCode
-Code <|-- DeliveryCode
-Code <|-- ProfileCode
 
 ''''' End executor ''''
 
@@ -132,7 +114,7 @@ BundleDatabase "1" *-- "0..N" Bundle
 
 class BundleIO <<Observable>> {
     + sendBundle(fd)
-    - bundleReceiver(
+    - bundleReceiver()
 }
 
 ' BundleIO ..> Bundle
@@ -144,7 +126,7 @@ class Deliverer {
 }
 
 ' Deliverer ..> Application
-Deliverer "1" o-- "1" ApplicationDatabase
+Deliverer "1" o-- "1" AppManager 
 Deliverer "1" *--> "1" Executor
 
 class Forwarder {
@@ -161,7 +143,7 @@ class BundleManager {
 }
 
 BundleManager ..> NeighborDiscoverer : observes
-BundleManager ..> ApplicationManager : observes
+' BundleManager ..> AppManager : observes
 BundleManager ..> BundleIO : observes
 
 BundleManager "1" *-- "1" BundleIO
